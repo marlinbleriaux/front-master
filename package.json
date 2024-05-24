@@ -1,0 +1,51 @@
+{
+  "name": "amphimill",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "vite --port 8080",
+    "build": "vite build",
+    "preview": "vite preview",
+    "extract": "formatjs extract"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^2.8.8",
+    "@react-google-maps/api": "^2.19.2",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@reduxjs/toolkit": "^1.8.1",
+    "@syncfusion/ej2-react-pdfviewer": "^23.1.44",
+    "@tailwindcss/forms": "^0.4.0",
+    "axios": "^0.27.2",
+    "axios-progress-bar": "^1.2.0",
+    "chart.js": "^3.5.0",
+    "chartjs-adapter-moment": "^1.0.0",
+    "moment": "^2.29.1",
+    "react": "^17.0.2",
+    "react-datepicker": "^4.16.0",
+    "react-dom": "^17.0.2",
+    "react-drag-drop-files": "^2.3.10",
+    "react-flatpickr": "^3.10.7",
+    "react-hook-form": "^7.31.1",
+    "react-intl": "^5.25.1",
+    "react-phone-input-2": "^2.15.1",
+    "react-redux": "^8.0.1",
+    "react-router-dom": "^6.2.1",
+    "react-select": "^5.7.4",
+    "react-toastify": "^9.1.3",
+    "react-transition-group": "^4.4.1",
+    "react-webcam": "^7.2.0",
+    "resource-axios": "^1.2.5",
+    "tracking": "^1.1.3",
+    "uuid": "^9.0.1",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@formatjs/cli": "^4.8.4",
+    "@vitejs/plugin-react": "^1.0.7",
+    "autoprefixer": "10.4.5",
+    "babel-plugin-formatjs": "^10.3.20",
+    "postcss": "^8.4.38",
+    "sass": "^1.49.0",
+    "tailwindcss": "^3.4.3",
+    "vite": "^2.7.2"
+  }
+}

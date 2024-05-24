@@ -1,0 +1,18 @@
+export default [
+    { value: "DIVERS", name: "DIVERS" },
+    { value: "COMMUNIQUE", name: "COMMUNIQUE" },
+    { value: "ASTUCES_ETUDIANTS", name: "ASTUCES_ETUDIANTS"},
+    { value: "MENU_RESTAU", name: "MENU_RESTAU" },
+    { value: "BOURSE", name: "BOURSE" },
+    { value: "JOB", name: "JOB" },
+    { value: "ALERT", name: "ALERT" },
+    { value: "SANTE_ET_BIEN_ETRE", name: "SANTE_ET_BIEN_ETRE"},
+    { value: "ADMISSION", name: "ADMISSION" },
+    { value: "INSCRIPTION", name: "INSCRIPTION" },
+    { value: "LOGEMENT", name: "LOGEMENT" },
+    { value: "EXAMEN", name: "EXAMEN" },
+    { value: "DIPLOME", name: "DIPLOME" },
+    { value: "REQUETE", name: "REQUETE" },
+    { value: "PAYEMENT", name: "PAYEMENT" },
+    { value: "PAYEMENT", name: "PAYEMENT" },
+  ];

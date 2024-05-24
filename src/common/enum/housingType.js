@@ -1,0 +1,17 @@
+export default [
+    {value:"APPARTEMENT", name:"APPARTEMENT"},
+    {value:"MAISON", name:"MAISON"},
+    {value:"STUDIO ", name:"STUDIO "},
+    {value:"CHAMBRE_PARTAGEE", name:"CHAMBRE_PARTAGEE"},
+    {value:"CHAMBRE_PRIVEE", name:"CHAMBRE_PRIVEE"},
+    {value:"VILLA", name:"VILLA"},
+    {value:"CHALET", name:"CHALET"},
+    {value:"BUNGALOW", name:"BUNGALOW"},
+    {value:"LOFT", name:"LOFT"},
+    {value:"PENTHOUSE", name:"PENTHOUSE"},
+    {value:"DUPLEX", name:"DUPLEX"},
+    {value:"COTTAGE", name:"COTTAGE"},
+    {value:"GITE", name:"GITE"},
+    {value:"RESIDENCE_UNIVERSITAIRE", name:"RESIDENCE_UNIVERSITAIRE"},
+    {value:"RESIDENCE_PERSONNES_AGEES", name:"RESIDENCE_PERSONNES_AGEES"},
+];

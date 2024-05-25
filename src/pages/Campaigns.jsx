@@ -1,28 +1,76 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import SearchForm from "../partials/actions/SearchForm";
 import FilterButton from "../components/DropdownFilter";
 import Webcam from "react-webcam";
-import axios from "axios";
-import {checkAttendance} from "../slices/student";
-import { useDispatch } from "react-redux";
-import {useSelector} from "react-redux";
+import { checkAttendance } from "../slices/student";
+import { useDispatch, useSelector } from "react-redux";
+import * as faceapi from 'face-api.js';
 
 function Campaigns() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [studentInfo, setStudentInfo] = useState(null); // État pour stocker les informations de l'étudiant
-  const [faceDis, setFaceDis] = useState(null); // État pour stocker la distance de visage
-  const [matcheIndexes, setMatcheIndexes] = useState(null); // État pour stocker les index des correspondances
-  const [errorMessage, setErrorMessage] = useState(null); // État pour stocker le message d'erreur
+  const [studentInfo, setStudentInfo] = useState(null);
+  const [faceDis, setFaceDis] = useState(null);
+  const [matcheIndexes, setMatcheIndexes] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const { message: message } = useSelector((state) => state.message);
+  const [faceRectangles, setFaceRectangles] = useState([]);
 
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const dispatch = useDispatch();
 
-  // const tracking = require('tracking');
+  useEffect(() => {
+    const loadModels = async () => {
+      const MODEL_URL = '/models'; // Assurez-vous que les modèles sont disponibles dans ce dossier public
+      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+    };
+    loadModels();
+  }, []);
 
+  const detectFaces = useCallback(async () => {
+    if (
+      webcamRef.current &&
+      webcamRef.current.video.readyState === 4
+    ) {
+      const video = webcamRef.current.video;
+      const displaySize = {
+        width: video.videoWidth,
+        height: video.videoHeight,
+      };
+
+      faceapi.matchDimensions(canvasRef.current, displaySize);
+
+      const detections = await faceapi
+        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceDescriptors()
+        .withFaceExpressions();
+
+      const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+      canvasRef.current
+        .getContext('2d')
+        .clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+      faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
+      faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
+      faceapi.draw.drawFaceExpressions(canvasRef.current, resizedDetections);
+
+      setFaceRectangles(resizedDetections);
+    }
+  }, [webcamRef, canvasRef, setFaceRectangles]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      detectFaces();
+    }, 100);
+    return () => clearInterval(interval);
+  }, [detectFaces]);
 
   const capturePhoto = () => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -30,25 +78,6 @@ function Campaigns() {
       sendPhotoToBackend(imageSrc);
     }
   };
-  // useEffect(() => {
-  //   const tracker = new tracking.ObjectTracker('face');
-  //   tracker.setInitialScale(4);
-  //   tracker.setStepSize(2);
-  //   tracker.setEdgesDensity(0.1);
-  
-  //   tracking.track(webcamRef.current.video, tracker);
-  
-  //   tracker.on('track', (event) => {
-  //     event.data.forEach((rect) => {
-  //       console.log(rect.x, rect.y, rect.height, rect.width);
-  //       // Faites quelque chose avec les données de détection des visages, par exemple, affichez-les sur l'image
-  //       const canvas = document.createElement('canvas');
-  //       const context = canvas.getContext('2d');
-  //       context.strokeStyle = '#a64ceb';
-  //       context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-  //     });
-  //   });
-  // }, []);
 
   const dataURLtoBlob = (dataURL) => {
     const byteString = atob(dataURL.split(",")[1]);
@@ -58,38 +87,18 @@ function Campaigns() {
     for (let i = 0; i < byteString.length; i++) {
       ia[i] = byteString.charCodeAt(i);
     }
-    // console.log("ia");
     return new Blob([ab], { type: mimeString });
   };
 
   const sendPhotoToBackend = async (imageSrc) => {
     try {
       const blob = dataURLtoBlob(imageSrc);
-     
       const formData = new FormData();
       formData.append("photo", blob, "photo.jpg");
-      // console.log(formData)
-   
-      // console.log("sssssssssssssssss");
-      // Appeler checkAttendance (action asynchrone)
       const response = await dispatch(checkAttendance(formData)).unwrap();
-      console.log("datttttttttttt");
-      // const response = await axios.post(
-      //   "http://127.0.0.1:5000/api/check",
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
-      console.log(response)
-
-      // Réinitialiser le message d'erreur
+      
       setErrorMessage(null);
-
-      // Mettre à jour l'état avec les informations de l'étudiant et autres détails
-      if ( response.result.student) {
+      if (response.result.student) {
         setStudentInfo(response.result.student);
       }
       if (response.faceDis) {
@@ -99,17 +108,12 @@ function Campaigns() {
         setMatcheIndexes(response.matcheIndexes);
       }
     } catch (error) {
-      // Mettre à jour le message d'erreu
-      console.log("<<<<<<<s>>>>>>>")
-      console.log(message)
-      setErrorMessage(
-      message.message
-      );
+      setErrorMessage(message.message);
       setStudentInfo(null);
       setFaceDis(null);
       setMatcheIndexes(null);
 
-      console.error("Error uploading photo:",  message);
+      console.error("Error uploading photo:", message);
     }
   };
 
@@ -158,26 +162,44 @@ function Campaigns() {
               {/* Camera Card */}
               <div className="bg-white shadow-lg rounded-sm border border-slate-200 p-5">
                 <h2 className="text-xl font-bold mb-4">Capture Photo</h2>
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  className="mb-4"
-                />
+
+                <div style={{ position: 'relative' }}>
+                  <Webcam
+                    audio={false}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    className="mb-4"
+                    videoConstraints={{
+                      width: 640,
+                      height: 480,
+                      facingMode: "user"
+                    }}
+                  />
+                  <canvas
+                    ref={canvasRef}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%'
+                    }}
+                  />
+                </div>
+
                 <button
                   className="btn bg-indigo-500 hover:bg-indigo-600 text-white"
                   onClick={capturePhoto}
                 >
                   Capture Photo
                 </button>
-                
               </div>
 
               {/* Student Info Card */}
               <div className="bg-white shadow-lg rounded-sm border border-slate-200 p-5">
                 <h2 className="text-xl font-bold mb-4">Student Information</h2>
                 {errorMessage && (
-                  <p style={{ color: "red" }}>{errorMessage}</p> // Affichage du message d'erreur en rouge
+                  <p style={{ color: "red" }}>{errorMessage}</p>
                 )}
                 {studentInfo ? (
                   <div>
@@ -185,7 +207,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#f8f9fa",
                         padding: "10px",
-                        // borderRadius: "5px",
                       }}
                     >
                       <strong>Name:</strong> {studentInfo.name}
@@ -194,7 +215,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#e9ecef",
                         padding: "10px",
-                        // borderRadius: "5px",
                       }}
                     >
                       <strong>Matricule:</strong> {studentInfo.matricule}
@@ -203,14 +223,12 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#f8f9fa",
                         padding: "10px",
-                        // borderRadius: "5px",
                       }}
                     >
                       <strong>Email:</strong> {studentInfo.email}
                     </p>
                     <p
                       style={{
-                        // backgroundColor: "#ced4da",
                         padding: "10px",
                         backgroundColor: "#e9ecef",
                       }}
@@ -221,7 +239,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#f8f9fa",
                         padding: "10px",
-                        // borderRadius: "5px",
                       }}
                     >
                       <strong>Sexe:</strong> {studentInfo.sexe}
@@ -230,8 +247,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#e9ecef",
                         padding: "10px",
-                        // borderRadius: "5px",
-                        // color: "white",
                       }}
                     >
                       <strong>Filiere:</strong> {studentInfo.filiere}
@@ -240,8 +255,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#f8f9fa",
                         padding: "10px",
-                        // borderRadius: "5px",
-                        // color: "white",
                       }}
                     >
                       <strong>Departement:</strong> {studentInfo.departement}
@@ -250,8 +263,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#e9ecef",
                         padding: "10px",
-                        // borderRadius: "5px",
-                        // color: "white",
                       }}
                     >
                       <strong>Faculte:</strong> {studentInfo.faculty}
@@ -260,8 +271,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#f8f9fa",
                         padding: "10px",
-                        // borderRadius: "5px",
-                        // color: "white",
                       }}
                     >
                       <strong>Birthdate:</strong> {studentInfo.birthdate}
@@ -270,8 +279,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#e9ecef",
                         padding: "10px",
-                        // borderRadius: "5px",
-                        // color: "white",
                       }}
                     >
                       <strong>Level:</strong> {studentInfo.level}
@@ -286,7 +293,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#f8f9fa",
                         padding: "10px",
-                        // borderRadius: "5px",
                       }}
                     >
                       <strong>Face Distance:</strong> {faceDis[0]}
@@ -299,7 +305,6 @@ function Campaigns() {
                       style={{
                         backgroundColor: "#e9ecef",
                         padding: "10px",
-                        // borderRadius: "5px",
                       }}
                     >
                       <strong>Match Index:</strong> {matcheIndexes}

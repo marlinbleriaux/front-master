@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import SearchForm from "../partials/actions/SearchForm";
@@ -15,68 +15,67 @@ function Campaigns() {
   const [matcheIndexes, setMatcheIndexes] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const { message: message } = useSelector((state) => state.message);
-  const [faceRectangles, setFaceRectangles] = useState([]);
 
-  const webcamRef = useRef(null);
+  const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const loadModels = async () => {
-      const MODEL_URL = '/models'; // Assurez-vous que les modèles sont disponibles dans ce dossier public
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-    };
+    startVideo();
     loadModels();
   }, []);
 
-  const detectFaces = useCallback(async () => {
-    if (
-      webcamRef.current &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      const video = webcamRef.current.video;
-      const displaySize = {
-        width: video.videoWidth,
-        height: video.videoHeight,
-      };
+  const startVideo = () => {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((currentStream) => {
+        videoRef.current.srcObject = currentStream;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-      faceapi.matchDimensions(canvasRef.current, displaySize);
+  const loadModels = async () => {
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
+      faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+      faceapi.nets.faceExpressionNet.loadFromUri("/models")
+    ]);
+      faceMyDetect();
+    // });
+  };
 
-      const detections = await faceapi
-        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptors()
-        .withFaceExpressions();
+  const faceMyDetect = () => {
+    setInterval(async () => {
+      if (videoRef.current && videoRef.current.readyState === 4) {
+        const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceExpressions();
 
-      const resizedDetections = faceapi.resizeResults(detections, displaySize);
+          const canvas = canvasRef.current;
+        const displaySize = { width: videoRef.current.videoWidth, height: videoRef.current.videoHeight };
+        faceapi.matchDimensions(canvas, displaySize);
 
-      canvasRef.current
-        .getContext('2d')
-        .clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
-      faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
-      faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
-      faceapi.draw.drawFaceExpressions(canvasRef.current, resizedDetections);
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
-      setFaceRectangles(resizedDetections);
-    }
-  }, [webcamRef, canvasRef, setFaceRectangles]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      detectFaces();
+        faceapi.draw.drawDetections(canvas, resizedDetections);
+        // faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
+        // faceapi.draw.drawFaceExpressions(canvasRef.current, resizedDetections);
+      }
     }, 100);
-    return () => clearInterval(interval);
-  }, [detectFaces]);
-
+  };
+ 
   const capturePhoto = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    if (imageSrc) {
-      sendPhotoToBackend(imageSrc);
-    }
+    const canvas = document.createElement("canvas");
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const imageSrc = canvas.toDataURL("image/jpeg");
+    sendPhotoToBackend(imageSrc);
   };
 
   const dataURLtoBlob = (dataURL) => {
@@ -96,7 +95,7 @@ function Campaigns() {
       const formData = new FormData();
       formData.append("photo", blob, "photo.jpg");
       const response = await dispatch(checkAttendance(formData)).unwrap();
-      
+
       setErrorMessage(null);
       if (response.result.student) {
         setStudentInfo(response.result.student);
@@ -112,44 +111,31 @@ function Campaigns() {
       setStudentInfo(null);
       setFaceDis(null);
       setMatcheIndexes(null);
-
       console.error("Error uploading photo:", message);
     }
   };
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      {/* Content area */}
       <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-        {/* Site header */}
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main>
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            {/* Page header */}
             <div className="sm:flex sm:justify-between sm:items-center mb-8">
-              {/* Left: Title */}
               <div className="mb-4 sm:mb-0">
                 <h1 className="text-2xl md:text-3xl text-slate-800 font-bold">
                   Check Student 👀
                 </h1>
               </div>
 
-              {/* Right: Actions */}
               <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                {/* Search form */}
                 <SearchForm />
-                {/* Filter button */}
                 <FilterButton align="right" />
-                {/* Create campaign button */}
                 <button className="btn bg-indigo-500 hover:bg-indigo-600 text-white">
-                  <svg
-                    className="w-4 h-4 fill-current opacity-50 shrink-0"
-                    viewBox="0 0 16 16"
-                  >
+                  <svg className="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">
                     <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
                   </svg>
                   <span className="hidden xs:block ml-2">Create Student</span>
@@ -157,22 +143,19 @@ function Campaigns() {
               </div>
             </div>
 
-            {/* Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Camera Card */}
               <div className="bg-white shadow-lg rounded-sm border border-slate-200 p-5">
                 <h2 className="text-xl font-bold mb-4">Capture Photo</h2>
 
                 <div style={{ position: 'relative' }}>
-                  <Webcam
-                    audio={false}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    className="mb-4"
-                    videoConstraints={{
-                      width: 640,
-                      height: 480,
-                      facingMode: "user"
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    muted
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: 'auto'
                     }}
                   />
                   <canvas
@@ -195,7 +178,6 @@ function Campaigns() {
                 </button>
               </div>
 
-              {/* Student Info Card */}
               <div className="bg-white shadow-lg rounded-sm border border-slate-200 p-5">
                 <h2 className="text-xl font-bold mb-4">Student Information</h2>
                 {errorMessage && (
@@ -203,82 +185,34 @@ function Campaigns() {
                 )}
                 {studentInfo ? (
                   <div>
-                    <p
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#f8f9fa", padding: "10px" }}>
                       <strong>Name:</strong> {studentInfo.name}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#e9ecef",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#e9ecef", padding: "10px" }}>
                       <strong>Matricule:</strong> {studentInfo.matricule}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#f8f9fa", padding: "10px" }}>
                       <strong>Email:</strong> {studentInfo.email}
                     </p>
-                    <p
-                      style={{
-                        padding: "10px",
-                        backgroundColor: "#e9ecef",
-                      }}
-                    >
+                    <p style={{ padding: "10px", backgroundColor: "#e9ecef" }}>
                       <strong>Phone Number:</strong> {studentInfo.phoneNumber}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#f8f9fa", padding: "10px" }}>
                       <strong>Sexe:</strong> {studentInfo.sexe}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#e9ecef",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#e9ecef", padding: "10px" }}>
                       <strong>Filiere:</strong> {studentInfo.filiere}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#f8f9fa", padding: "10px" }}>
                       <strong>Departement:</strong> {studentInfo.departement}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#e9ecef",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#e9ecef", padding: "10px" }}>
                       <strong>Faculte:</strong> {studentInfo.faculty}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        padding: "10px",
-                      }}
-                    >
+                    <p style={{ backgroundColor: "#f8f9fa", padding: "10px" }}>
                       <strong>Birthdate:</strong> {studentInfo.birthdate}
                     </p>
-                    <p
-                      style={{
-                        backgroundColor: "#e9ecef",
-                        padding: "10px",
+                    <p style={{ backgroundColor: "#e9ecef", padding: "10px",
                       }}
                     >
                       <strong>Level:</strong> {studentInfo.level}

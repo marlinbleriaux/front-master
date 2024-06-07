@@ -69,49 +69,41 @@ export const checkAttendance = createAsyncThunk(
     }
   }
 );
+export const enrollStudent = createAsyncThunk(
+  '/enroll',
+  async ({ id, photoFile }, thunkAPI) => {
+    try {
+      const response = await studentService.enrollStudent(id, photoFile);
+      return response;
+    } catch (error) {
+      const message = error.response?.data || error.message || 'Something went wrong';
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
-// export const getTeachers = createAsyncThunk(
-//   "public/user?type",
-//   async (type, thunkAPI) => {
-//     try {
-//       const response = await UsersService.getTeachers(type);
-//       thunkAPI.dispatch(replaceTeachers(response.data));
-//       thunkAPI.dispatch(replacePagination(response._pagination));
-//       return response;
-//     } catch (error) {
-//       console.log(error);
-//       const message =
-//         (error.response &&
-//           error.response.data &&
-//           error.response.data.message) ||
-//         error.message ||
-//         error.toString();
-//       thunkAPI.dispatch(setMessage(message));
-//       return thunkAPI.rejectWithValue();
-//     }
-//   }
-// );
 
-// export const getUserById = createAsyncThunk(
-//   "public/user?_id",
-//   async (id, thunkAPI) => {
-//     try {
-//       const response = await UsersService.getUserById(id);
-//       thunkAPI.dispatch(replaceUser(response));
-//       return response;
-//     } catch (error) {
-//       console.log(error);
-//       const message =
-//         (error.response &&
-//           error.response.data &&
-//           error.response.data.message) ||
-//         error.message ||
-//         error.toString();
-//       thunkAPI.dispatch(setMessage(message));
-//       return thunkAPI.rejectWithValue();
-//     }
-//   }
-// );
+export const getStudentById = createAsyncThunk(
+  "/students?_id",
+  async (id,thunkAPI) => {
+    try {
+      const response = await studentService.getStudentById(id);
+      thunkAPI.dispatch(replaceUser(response));
+      return response;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
 
 
 

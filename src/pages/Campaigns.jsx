@@ -91,9 +91,17 @@ function Campaigns() {
 
   const sendPhotoToBackend = async (imageSrc) => {
     try {
+      console.log("imageSrc")
+      console.log(imageSrc)
+
       const blob = dataURLtoBlob(imageSrc);
       const formData = new FormData();
       formData.append("photo", blob, "photo.jpg");
+      
+      console.log("formdata")
+      console.log(formData)
+
+
       const response = await dispatch(checkAttendance(formData)).unwrap();
 
       setErrorMessage(null);

@@ -23,17 +23,17 @@ const createStudent = (data) => {
 
 const enrollStudent = async (id, photoFile) => {
     try {
-      const formData = new FormData();
-      formData.append('photo', photoFile);
-  
-      const response = await api.post(`/enroll/${id}`, formData, {
+      // const formData = new FormData();
+      // formData.append('photo', photoFile);
+  console.log(id)
+      const response = await api.post(`/enroll/${id}`, photoFile, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      return response.data;
+      return response;
     } catch (error) {
-      throw error.response.data;
+      throw error
     }
   };
   
@@ -53,14 +53,26 @@ const enrollStudent = async (id, photoFile) => {
       throw error.response.data;
     }
   };
-  
+  const getStudentById = async (id) => {
+    try {
+      console.log(id);
+        const response = await api.get(`/students/${id}`);
+        // console.log(response);
+        return response.data;
+        
+    } catch (error) {
+        console.error("Error fetching student:", error);
+        throw error;
+    }
+};
+
 
 const studentService = {
     getStudents,
     checkAttendance,
     enrollStudent,
-    createStudent
-//   getUserById,
+    createStudent,
+    getStudentById,
 //   deleteUser,
 //   addUsers,
 //   updateUser,

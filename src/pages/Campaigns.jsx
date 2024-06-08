@@ -21,8 +21,15 @@ function Campaigns() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    startVideo();
-    loadModels();
+    const initialize = async () => {
+      try {
+        await loadModels();
+        startVideo();
+      } catch (error) {
+        console.error("Error loading models or starting video:", error);
+      }
+    };
+    initialize();
   }, []);
 
   const startVideo = () => {
@@ -36,14 +43,17 @@ function Campaigns() {
   };
 
   const loadModels = async () => {
-    Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-      faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-      faceapi.nets.faceExpressionNet.loadFromUri("/models")
-    ]);
+    try {
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
+        faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+        faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+        faceapi.nets.faceExpressionNet.loadFromUri("/models"),
+      ]);
       faceMyDetect();
-    // });
+    } catch (error) {
+      console.error("Error loading face-api.js models:", error);
+    }
   };
 
   const faceMyDetect = () => {

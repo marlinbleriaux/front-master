@@ -202,21 +202,21 @@ function DashboardA() {
         <main>
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             {/* Welcome banner */}
-            <WelcomeBanner />
+            {/* <WelcomeBanner /> */}
 
             {/* Dashboard actions */}
             <div className="sm:flex sm:justify-between sm:items-center mb-8">
               {/* Left: Avatars */}
-              <DashboardAvatars />
+              {/* <DashboardAvatars /> */}
 
               {/* Right: Actions */}
-              <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+              {/* <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2"> */}
                 {/* Filter button */}
-                <FilterButton align="right" />
+                {/* <FilterButton align="right" /> */}
                 {/* Datepicker built with flatpickr */}
-                <Datepicker align="right" />
+                {/* <Datepicker align="right" /> */}
                 {/* Add view button */}
-                <button className="btn bg-cyan-500 hover:bg-cyan-600 text-white">
+                {/* <button className="btn bg-cyan-500 hover:bg-cyan-600 text-white">
                   <svg
                     className="w-4 h-4 fill-current opacity-50 shrink-0"
                     viewBox="0 0 16 16"
@@ -224,11 +224,11 @@ function DashboardA() {
                     <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
                   </svg>
                   <span className="hidden xs:block ml-2">Add View</span>
-                </button>
-              </div>
+                </button> */}
+              {/* </div> */}
             </div>
-            <div className="flex items-center justify-start flex-wrap md:mx-2 space-x-5 mb-3">
-              <SelectInput
+            {/* <div className="flex items-center justify-start flex-wrap md:mx-2 space-x-5 mb-3"> */}
+              {/* <SelectInput
                 labelI="University"
                 option={universities}
                 onChange={(val) => {
@@ -290,20 +290,20 @@ function DashboardA() {
                   getData({ params: { type: `regex:${val}` }, field: 'type' });
                 }}
                 selectedOption={type}
-              />
-            </div>
+              /> */}
+            {/* </div> */}
 
             {/* Cards */}
             {/* <div className="grid grid-cols-12 gap-6"> */}
             <div className="flex items-center justify-start flex-wrap md:mx-2">
               {/* Line chart (Acme Advanced) */}
               {/* {isFinishedFa && ( */}
-                <DashboardPapers
+                {/* <DashboardPapers
                   facultyFinish={isFinishedFa}
                   departmntFinish={isFinishedDep}
                   filiereFinish={isFinishedFili}
-                  levelFinish={isFinishedLev}
-                />
+                  levelFinish={isFinishedLev} */}
+                {/* /> */}
               {/* )} */}
               {/* Line chart (Acme Professional) */}
               {/* <DashboardCard03 /> */}

@@ -64,7 +64,7 @@ export default function Signin() {
 
       <div className="bg-white flex flex-col justify-center">
         <h2 className="text-4xl dark:text-white font-bold text-center mb-6">
-          Welcome ✨
+          Check Stud 👀
         </h2>
         <form
           onSubmit={handleSubmit(onFormSubmit, onErrors)}
@@ -76,7 +76,7 @@ export default function Signin() {
                 className="block text-sm font-medium mb-1"
                 htmlFor="username"
               >
-                Identifiant
+                Name
               </label>
               <input
                 id="username"

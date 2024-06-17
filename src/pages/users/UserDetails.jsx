@@ -176,7 +176,7 @@ const userId=user?.student?.id
                     width={120}
                     height={100}
                   />
-                  <button onClick={handleWebcamCapture}>Capture Photo</button>
+                  <button  className="btn bg-cyan-500 hover:bg-cyan-600 text-white mt-4" onClick={handleWebcamCapture}>Capture Photo</button>
                 </div>
               )}
             </div>

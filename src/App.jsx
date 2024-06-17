@@ -108,12 +108,12 @@ function App() {
   return (
     <>
       <Routes>
-        <Route exact path="/" element={<DashboardA />} />
+        {/* <Route exact path="/" element={<Campaigns />} />
         <Route exact path="dashboarda">
           <Route path="" element={<DashboardA />} />
           <Route path="analytics" element={<AnalyticsA />} />
           <Route path="fintech" element={<FintechA />} />
-        </Route>
+        </Route> */}
 
         <Route exact path="users">
           <Route path="" element={<Navigate to="list" replace />} />
@@ -131,15 +131,15 @@ function App() {
           <Route path="details/:id" element={<InfosDetails />} />
         </Route>
 
-        <Route exact path="papers">
+        {/* <Route exact path="papers">
           <Route path="" element={<Navigate to="list" replace />} />
           <Route path="list" element={<ListPapers />} />
           <Route path="add" element={<AddPaper />} />
           <Route path="edit/:id" element={<AddPaper />} />
           <Route path="details/:id" element={<DetailsPaper />} />
-        </Route>
+        </Route> */}
 
-        <Route exact path="schools">
+        {/* <Route exact path="schools">
           <Route path="" element={<Navigate to="list" replace />} />
           <Route path="list" element={<ListSchool />} />
           <Route path="add" element={<AddSchool />} />
@@ -150,13 +150,13 @@ function App() {
         <Route exact path="logement">
           <Route path="" element={<Navigate to="list" replace />} />
           <Route path="list" element={<ListLoge />} />
-          <Route path="add" element={<AddLoge />} />
-        </Route>
+          <Route path="add" element={<AddLoge />} /> */}
+        {/* </Route> */}
 
         <Route path="/chats" element={<Message />} />
 
         <Route exact path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/analytics" element={<Analytics />} />
+        {/* <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/fintech" element={<Fintech />} />
         <Route path="/ecommerce/customers" element={<Customers />} />
         <Route path="/ecommerce/orders" element={<Orders />} />
@@ -167,7 +167,8 @@ function App() {
         <Route path="/ecommerce/cart" element={<Cart />} />
         <Route path="/ecommerce/cart-2" element={<Cart2 />} />
         <Route path="/ecommerce/cart-3" element={<Cart3 />} />
-        <Route path="/ecommerce/pay" element={<Pay />} />
+        <Route path="/ecommerce/pay" element={<Pay />} /> */}
+        <Route exact path="/" element={<Campaigns />} />
         <Route path="/campaigns" element={<Campaigns />} />
         {/* <Route path="/pepers/listen" element={<Listen />} /> */}
         <Route path="/community/users-tabs" element={<UsersTabs />} />

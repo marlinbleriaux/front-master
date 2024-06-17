@@ -141,20 +141,20 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 •••
               </span>
               <span className="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                Pages
+                MENUS
               </span>
             </h3>
             <ul className="mt-3">
               {/* Dashboard */}
-              <SidebarLinkGroup
-                activecondition={
+              {/* <SidebarLinkGroup */}
+                {/* activecondition={
                   pathname === "/" || pathname.includes("dashboarda")
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <a
+                } */}
+              {/*  */}
+                {/* {(handleClick, open) => {
+                  return ( */}
+                    {/* <React.Fragment> */}
+                      {/* <a
                         href="#0"
                         className={`block text-slate-200 hover:text-white truncate transition duration-150 ${
                           (pathname === "/" ||
@@ -167,9 +167,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                             ? handleClick()
                             : setSidebarExpanded(true);
                         }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
+                      > */}
+                        {/* <div className="flex items-center justify-between"> */}
+                          {/* <div className="flex items-center">
                             <svg
                               className="shrink-0 h-6 w-6"
                               viewBox="0 0 24 24"
@@ -202,9 +202,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                             <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                               Dashboard
                             </span>
-                          </div>
+                          </div> */}
                           {/* Icon */}
-                          <div className="flex shrink-0 ml-2">
+                          {/* <div className="flex shrink-0 ml-2">
                             <svg
                               className={`w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 ${
                                 open && "transform rotate-180"
@@ -214,12 +214,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
                             </svg>
                           </div>
-                        </div>
-                      </a>
-                      <div className="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                        <ul className={`pl-9 mt-1 ${!open && "hidden"}`}>
-                          <li className="mb-1 last:mb-0">
-                            <NavLink
+                        </div> */}
+                      {/* </a> */}
+                      {/* <div className="lg:hidden lg:sidebar-expanded:block 2xl:block">
+                        <ul className={`pl-9 mt-1 ${!open && "hidden"}`}> */}
+                          {/* <li className="mb-1 last:mb-0"> */}
+                            {/* <NavLink
                               end
                               to="/"
                               className={({ isActive }) =>
@@ -230,8 +230,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                                 Main
                               </span>
-                            </NavLink>
-                          </li>
+                            </NavLink> */}
+                          {/* </li> */}
                           {/* <li className="mb-1 last:mb-0">
                             <NavLink
                               end
@@ -260,12 +260,12 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               </span>
                             </NavLink>
                           </li> */}
-                        </ul>
-                      </div>
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+                        {/* </ul> */}
+                      {/* </div> */}
+                    {/* </React.Fragment> */}
+                {/* //   );
+                // }} */}
+              {/* </SidebarLinkGroup> */}
               {/* Users */}
 
               <SidebarLinkGroup activecondition={pathname.includes("users")}>

@@ -123,13 +123,13 @@ function App() {
           <Route path="details/:id" element={<UserDetails />} />
         </Route>
 
-        <Route exact path="infos">
+        {/* <Route exact path="infos">
           <Route path="" element={<Navigate to="list" replace />} />
           <Route path="list" element={<ListInfos />} />
           <Route path="add" element={<AddInfo />} />
           <Route path="edit/:id" element={<AddInfo />} />
           <Route path="details/:id" element={<InfosDetails />} />
-        </Route>
+        </Route> */}
 
         {/* <Route exact path="papers">
           <Route path="" element={<Navigate to="list" replace />} />
